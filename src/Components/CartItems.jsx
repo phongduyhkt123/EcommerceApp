@@ -12,19 +12,26 @@ import React from "react";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { FontAwesome } from "@expo/vector-icons";
 
-import products from "../data/products";
 import Colors from "../color";
-import Buttone from "./Buttone";
+import { useFocusEffect } from "@react-navigation/native";
+import { getCart, deleteCart } from "../Stores/cart/cartAction";
+import { connect, useSelector } from "react-redux";
 
-const Swiper = () => {
+const Swiper = ({ data = [], deleteCart }) => {
+  const { token } = useSelector((state) => state.authenReducer.user);
+
+  const handleDelete = (productId) => {
+    deleteCart({ token, productId });
+  };
+
   return (
     <SwipeListView
       rightOpenValue={-50}
       previewRowKey="0"
       previewOpenValue={-40}
       previewOpenDelay={3000}
-      data={products.slice(0, 10)}
-      renderHiddenItem={renderHiddenItems}
+      data={data}
+      renderHiddenItem={(data) => renderHiddenItems({ data, handleDelete })}
       renderItem={renderItems}
       showsVerticalScrollIndicator={false}
     />
@@ -43,7 +50,7 @@ const renderItems = (data) => (
       >
         <Center w="25%" bg={Colors.deepGray}>
           <Image
-            source={{ uri: data.item.thumbnail }}
+            source={{ uri: data.item.productVariation.avatar.url }}
             alt="product"
             w="full"
             h={24}
@@ -52,7 +59,7 @@ const renderItems = (data) => (
         </Center>
         <VStack w="60%" px={2} space={2}>
           <Text isTruncated color={Colors.black} bold fontSize={10}>
-            {data.item.title}
+            {data.item.productVariation.product.name}
           </Text>
           <Text color={Colors.lightBlack}>${data.item.price}</Text>
         </VStack>
@@ -70,28 +77,54 @@ const renderItems = (data) => (
   </Pressable>
 );
 
-const renderHiddenItems = () => (
-  <Pressable
-    w={50}
-    roundedTopRight={10}
-    roundedBottomRight={10}
-    h="88%"
-    ml="auto"
-    justifyContent="center"
-    bg={Colors.red}
-  >
-    <Center alignItems="center" space={2}>
-      <FontAwesome name="trash" size={24} color={Colors.white} />
-    </Center>
-  </Pressable>
-);
+const renderHiddenItems = ({ data, handleDelete }) => {
+  return (
+    <Pressable
+      w={50}
+      roundedTopRight={10}
+      roundedBottomRight={10}
+      h="88%"
+      ml="auto"
+      justifyContent="center"
+      bg={Colors.red}
+      onPress={() => {
+        handleDelete(data.item.productVariation.id);
+      }}
+    >
+      <Center alignItems="center" space={2}>
+        <FontAwesome name="trash" size={24} color={Colors.white} />
+      </Center>
+    </Pressable>
+  );
+};
 
-const CartItems = () => {
+const CartItems = ({ getCart, deleteCart, token, cartItems }) => {
+  useFocusEffect(
+    React.useCallback(() => {
+      getCart({ token });
+    }, [])
+  );
   return (
     <Box mr={6}>
-      <Swiper />
+      <Swiper data={cartItems} deleteCart={deleteCart} />
     </Box>
   );
 };
 
-export default CartItems;
+function mapStateToProps(state) {
+  return {
+    loading: state.cartReducer.loading,
+    cartItems: state.cartReducer.cartItems,
+    token: state.authenReducer.user.token,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    getCart: ({ token }) => dispatch(getCart({ token })),
+    deleteCart: ({ token, productId }) =>
+      dispatch(deleteCart({ token, productId })),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CartItems);

@@ -1,11 +1,22 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-// import productReducer from "./productSlide";
 import productReducer from "./product/productReducer";
-import loginReducer from "./login/loginReducer";
+import authenReducer from "./authen/authenReducer";
+import cartReducer from "./cart/cartReducer";
+import orderReducer from "./order/orderReducer";
+import alertReducer from "./alert/alertReducer";
+import addressReducer from "./address/addressReducer";
+import shippingReducer from "./shipping/shippingReducer";
+import signupReducer from "./signup/signupReducer";
 
 const rootReducer = combineReducers({
   productReducer,
-  loginReducer,
+  authenReducer,
+  cartReducer,
+  orderReducer,
+  addressReducer,
+  shippingReducer,
+  alertReducer,
+  signupReducer,
 });
 const store = configureStore({
   reducer: rootReducer,

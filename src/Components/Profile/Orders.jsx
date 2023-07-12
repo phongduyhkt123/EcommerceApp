@@ -1,79 +1,68 @@
 import { Box, Button, HStack, Pressable, ScrollView, Text } from "native-base";
 import React from "react";
 
+import { connect } from "react-redux";
+import { getOrders } from "../../Stores/order/orderAction";
 import Colors from "../../color";
 
-const Orders = () => {
+const Orders = ({ getOrders, orders, token }) => {
+  React.useEffect(() => {
+    getOrders({ token });
+  }, []);
+
   return (
     <Box h="full" bg={Colors.white} pt={5}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Paid */}
-        <Pressable>
-          <HStack
-            space={5}
-            px={5}
-            py={3}
-            bg={Colors.subGreen}
-            rounded={10}
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Text fontSize={9} color={Colors.blue} isTruncated>
-              Order #123456789
-            </Text>
-            <Text fontSize={12} bold color={Colors.black} isTruncated>
-              PAID
-            </Text>
-            <Text fontSize={11} italic color={Colors.black} isTruncated>
-              Dec 12 2022
-            </Text>
-            <Button
-              px={7}
-              py={1.5}
-              rounded={50}
-              bg={Colors.main}
-              _text={{ color: Colors.white }}
-              _pressed={{ bg: Colors.main }}
+        {orders.map((order) => (
+          <Pressable key={order.id}>
+            <HStack
+              space={5}
+              px={5}
+              py={3}
+              bg={Colors.subGreen}
+              rounded={10}
+              justifyContent="space-between"
+              alignItems="center"
             >
-              $456
-            </Button>
-          </HStack>
-        </Pressable>
-
-        {/* not paid */}
-        <Pressable>
-          <HStack
-            space={5}
-            px={5}
-            py={3}
-            rounded={10}
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Text fontSize={9} color={Colors.blue} isTruncated>
-              Order #123456789
-            </Text>
-            <Text fontSize={12} bold color={Colors.black} isTruncated>
-              NOT PAID
-            </Text>
-            <Text fontSize={11} italic color={Colors.black} isTruncated>
-              Dec 12 2022
-            </Text>
-            <Button
-              px={7}
-              py={1.5}
-              rounded={50}
-              bg={Colors.red}
-              _text={{ color: Colors.white }}
-              _pressed={{ bg: Colors.red }}
-            >
-              $456
-            </Button>
-          </HStack>
-        </Pressable>
+              <Text fontSize={9} color={Colors.blue} isTruncated>
+                Order {order.id}
+              </Text>
+              <Text fontSize={12} bold color={Colors.black} isTruncated>
+                {order.status}
+              </Text>
+              <Text fontSize={11} italic color={Colors.black} isTruncated>
+                {order.createTime}
+              </Text>
+              <Button
+                px={7}
+                py={1.5}
+                rounded={50}
+                bg={Colors.main}
+                _text={{ color: Colors.white }}
+                _pressed={{ bg: Colors.main }}
+              >
+                {order.total}
+              </Button>
+            </HStack>
+          </Pressable>
+        ))}
       </ScrollView>
     </Box>
   );
 };
 
-export default Orders;
+function mapStateToProps(state) {
+  return {
+    orders: state.orderReducer.orders,
+    loading: state.orderReducer.loading,
+    token: state.authenReducer.user.token,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    getOrders: ({ token }) => dispatch(getOrders({ token })),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Orders);

@@ -1,20 +1,22 @@
-import { AntDesign, Entypo } from "@expo/vector-icons";
+import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons";
 import {
   Box,
   Button,
   FormControl,
   HStack,
   Heading,
+  IconButton,
   Image,
   Input,
   Link,
   Pressable,
   Text,
   VStack,
+  View,
 } from "native-base";
 import { connect } from "react-redux";
 
-import { login } from "../Stores/login/loginAction";
+import { login } from "../Stores/authen/authenAction";
 
 import React, { useEffect } from "react";
 import Colors from "../color";
@@ -25,14 +27,15 @@ const LoginScreen = ({ navigation, login, user }) => {
     password: "",
   });
 
-  console.log("user", user);
+  const [isLogin, setIsLogin] = React.useState(false);
 
   const handleLogin = () => {
-    console.log("loginInfo", loginInfo);
+    setIsLogin(true);
     login(loginInfo);
   };
 
   useEffect(() => {
+    if (!isLogin) return;
     if (user.token) {
       navigation.navigate("Bottom");
     } else {
@@ -131,32 +134,37 @@ const LoginScreen = ({ navigation, login, user }) => {
             <Text fontSize="sm" color="muted.700" fontWeight={400}>
               Login with{" "}
             </Text>
-            <Link
-              _text={{
-                color: "cyan.500",
-                fontWeight: "medium",
-                fontSize: "sm",
-              }}
-              onPress={() => navigation.navigate("ForgotPassword")}
-            >
-              Facebook
-            </Link>
           </HStack>
 
-          <HStack justifyContent="center" alignItem="center">
-            <Text fontSize="sm" color="muted.700" fontWeight={400}>
-              Login with{" "}
-            </Text>
-            <Link
-              _text={{
-                color: "cyan.500",
-                fontWeight: "medium",
-                fontSize: "sm",
-              }}
-              onPress={() => navigation.navigate("ForgotPassword")}
+          <HStack display="flex" alignItem="center">
+            <View
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-around"
+              w="full"
             >
-              Google
-            </Link>
+              <Button
+                flex={1}
+                m={1}
+                background={Colors.red}
+                leftIcon={
+                  <FontAwesome5 name="google" size={24} color="white" />
+                }
+              >
+                Google
+              </Button>
+              <Button
+                flex={1}
+                m={1}
+                background={Colors.blue}
+                leftIcon={
+                  <FontAwesome5 name="facebook" size={24} color="white" />
+                }
+              >
+                Facebook
+              </Button>
+            </View>
           </HStack>
         </VStack>
       </Box>
@@ -166,8 +174,8 @@ const LoginScreen = ({ navigation, login, user }) => {
 
 function mapStateToProps(state) {
   return {
-    user: state.loginReducer.user,
-    loading: state.loginReducer.loading,
+    user: state.authenReducer.user,
+    loading: state.authenReducer.loading,
   };
 }
 

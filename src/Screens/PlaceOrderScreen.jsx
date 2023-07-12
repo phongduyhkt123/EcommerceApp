@@ -1,13 +1,18 @@
-import { Box, Heading, ScrollView, Text } from "native-base";
+import { Box, Heading, ScrollView } from "native-base";
 import React from "react";
 
-import Colors from "../color";
-import OrderInfo from "../Components/OrderInfo";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { connect, useSelector } from "react-redux";
+import OrderInfo from "../Components/OrderInfo";
 import OrderItem from "../Components/OrderItem";
 import PlaceOrderModel from "../Components/PlaceOrderModel";
+import Colors from "../color";
 
-const PlaceOrderScreen = () => {
+const PlaceOrderScreen = ({ route, address }) => {
+  const cartItems = useSelector((state) => state.cartReducer.cartItems);
+
+  const { paymentMethod } = route.params;
+
   return (
     <Box bg={Colors.subGreen} flex={1} safeArea pt={6}>
       <Box>
@@ -45,12 +50,18 @@ const PlaceOrderScreen = () => {
         <Heading bold fontsize={16} isTruncated my={4}>
           PRODUCTS
         </Heading>
-        <OrderItem />
+        <OrderItem data={cartItems} />
         {/* Total */}
-        <PlaceOrderModel />
+        <PlaceOrderModel
+          data={{ cartItems, deliveryAddress: address, paymentMethod }}
+        />
       </Box>
     </Box>
   );
 };
 
-export default PlaceOrderScreen;
+const mapStateToProps = (state) => ({
+  address: state.shippingReducer.address,
+});
+
+export default connect(mapStateToProps)(PlaceOrderScreen);

@@ -2,6 +2,8 @@ import { Box, Button, Center, HStack, Modal, Text, VStack } from "native-base";
 import { useState } from "react";
 import Buttone from "./Buttone";
 import Colors from "../color";
+import { createOrder } from "../Stores/order/orderAction";
+import { connect } from "react-redux";
 
 const OrdersInfos = [
   {
@@ -26,8 +28,41 @@ const OrdersInfos = [
   },
 ];
 
-const PlaceOrderModel = () => {
+const PlaceOrderModel = ({ data, token, createOrder }) => {
   const [showModel, setShowModel] = useState(false);
+
+  const total = data.cartItems.reduce(
+    (acc, item) => acc + item.productVariation.price,
+    0
+  );
+
+  const handlePlaceOrder = () => {
+    const order = {
+      products: data.cartItems.map((item) => ({
+        id: item.productVariation.id,
+        quantity: item.quantity,
+      })),
+      address:
+        data.deliveryAddress.address +
+        ", " +
+        data.deliveryAddress.ward +
+        ", " +
+        data.deliveryAddress.district +
+        ", " +
+        data.deliveryAddress.city,
+      receiverName: data.deliveryAddress.name,
+      receiverPhone: data.deliveryAddress.phone,
+      paymentMethod: data.paymentMethod,
+      shipPrice: 0,
+      toDistrict: 1,
+    };
+
+    createOrder({ token, order });
+
+    setShowModel(false);
+
+    navigator.navigate("Bottom");
+  };
 
   return (
     <Center>
@@ -67,7 +102,7 @@ const PlaceOrderModel = () => {
               flex={1}
               bg={Colors.main}
               color={Colors.white}
-              onPress={() => setShowModel(false)}
+              onPress={handlePlaceOrder}
               _pressed={{ bg: Colors.main, opacity: 0.5 }}
             >
               PLACE ORDER
@@ -79,4 +114,16 @@ const PlaceOrderModel = () => {
   );
 };
 
-export default PlaceOrderModel;
+const mapStateToProps = (state) => {
+  return {
+    token: state.authenReducer.user.token,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    createOrder: ({ token, order }) => dispatch(createOrder({ token, order })),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PlaceOrderModel);

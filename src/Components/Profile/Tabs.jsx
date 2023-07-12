@@ -3,6 +3,7 @@ import { useWindowDimensions } from "react-native";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 import Profile from "./Profile";
 import Orders from "./Orders";
+import DeliveryAddress from "./DeliveryAddress";
 import { StyleSheet } from "react-native";
 import Colors from "../../color";
 import { Text } from "native-base";
@@ -10,6 +11,7 @@ import { Text } from "native-base";
 const renderScene = SceneMap({
   first: Profile,
   second: Orders,
+  third: DeliveryAddress,
 });
 
 const Tabs = () => {
@@ -18,6 +20,7 @@ const Tabs = () => {
   const [routes] = useState([
     { key: "first", title: "PROFILE" },
     { key: "second", title: "ORDER" },
+    { key: "third", title: "ADDRESS" },
   ]);
 
   const renderTabBar = (props) => (

@@ -1,8 +1,10 @@
 import {
   Box,
+  Flex,
   HStack,
   Heading,
   Image,
+  Pressable,
   ScrollView,
   Spacer,
   Text,
@@ -13,13 +15,40 @@ import Rating from "../Components/Rating";
 import NumericInput from "react-native-numeric-input";
 import Buttone from "../Components/Buttone";
 import Review from "../Components/Review";
-import { useNavigation } from "@react-navigation/native";
+import { connect, useDispatch, useSelector } from "react-redux";
 
-const SingleProductScreen = ({ route }) => {
+import { addToCart } from "../Stores/cart/cartAction";
+import { alert, ALERT, SUCCESS_STATUS } from "../Stores/alert/alertAction";
+
+const SingleProductScreen = ({ route, addToCart, errors, alert, token }) => {
   const [value, setValue] = useState(1);
-  const navigation = useNavigation();
   const product = route.params.item;
-  console.log("product", product);
+
+  const [productVariationId, setProductVariationId] = useState(
+    product.variations[0].id
+  );
+
+  const handleAddToCart = () => {
+    addToCart({
+      token: token,
+      productId: productVariationId,
+      quantity: value,
+    });
+
+    if (errors) {
+      console.log("err", errors);
+    } else {
+      alert({
+        type: ALERT,
+        body: {
+          description: "Product added to cart",
+          title: "Success",
+          status: SUCCESS_STATUS,
+        },
+      });
+    }
+  };
+
   return (
     <Box safeArea flex={1} bg={Colors.white}>
       <ScrollView
@@ -83,6 +112,37 @@ const SingleProductScreen = ({ route }) => {
               $ {product.variations[0].price}
             </Heading>
           </HStack>
+
+          <Flex flexDirection="row" px={5} mt={5}>
+            {product.variations.map((variation) => (
+              <Pressable
+                key={variation.id}
+                bg={
+                  productVariationId === variation.id
+                    ? Colors.main
+                    : Colors.white
+                }
+                borderWidth={1}
+                borderColor={Colors.main}
+                borderRadius={5}
+                p={2}
+                mr={2}
+                onPress={() => setProductVariationId(variation.id)}
+              >
+                <Text
+                  color={
+                    productVariationId === variation.id
+                      ? Colors.white
+                      : Colors.main
+                  }
+                  fontSize={12}
+                >
+                  {variation.variationName}
+                </Text>
+              </Pressable>
+            ))}
+          </Flex>
+
           {/* description */}
           <Text
             lineHeight={24}
@@ -94,7 +154,12 @@ const SingleProductScreen = ({ route }) => {
             {product.description}
           </Text>
           <Box px={5} mt={5}>
-            <Buttone bg={Colors.main} color={Colors.white} mt={10}>
+            <Buttone
+              bg={Colors.main}
+              color={Colors.white}
+              mt={10}
+              onPress={handleAddToCart}
+            >
               ADD TO CART
             </Buttone>
           </Box>
@@ -106,4 +171,23 @@ const SingleProductScreen = ({ route }) => {
   );
 };
 
-export default SingleProductScreen;
+function mapStateToProps(state) {
+  return {
+    errors: state.cartReducer.error,
+    loading: state.cartReducer.loading,
+    token: state.authenReducer.user.token,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    addToCart: ({ token, productId, quantity }) =>
+      dispatch(addToCart({ token, productId, quantity })),
+    alert: ({ type, body }) => dispatch(alert({ type, body })),
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SingleProductScreen);

@@ -15,7 +15,6 @@ const productReducer = (state = initialState, action) => {
         loading: true,
       };
     case productActions.GET_PRODUCTS_SUCCESS:
-      console.log("action", action.payload);
       return {
         ...state,
         loading: false,
@@ -31,6 +30,29 @@ const productReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
+
+    case productActions.SEARCH_PRODUCTS:
+      return {
+        ...state,
+        loading: true,
+      };
+    case productActions.SEARCH_PRODUCTS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        products:
+          state.page < action.payload.data.currentPage
+            ? [...state.products, ...action.payload.data.data]
+            : state.products,
+        page: action.payload.data.currentPage,
+      };
+    case productActions.SEARCH_PRODUCTS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
     default:
       return state;
   }

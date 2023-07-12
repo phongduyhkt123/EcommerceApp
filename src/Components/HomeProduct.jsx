@@ -10,13 +10,12 @@ import {
 } from "native-base";
 import React from "react";
 
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { getProducts } from "../Stores/product/productAction";
 
 import Colors from "../color";
 import Rating from "./Rating";
-import { useNavigation } from "@react-navigation/native";
 
 const HomeProduct = ({ getProducts, products, loading }) => {
   const navigation = useNavigation();
@@ -32,7 +31,6 @@ const HomeProduct = ({ getProducts, products, loading }) => {
   );
 
   const handleLoadMore = () => {
-    console.log("end");
     if (!onScroll) {
       return null;
     }

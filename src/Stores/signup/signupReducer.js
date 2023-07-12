@@ -1,4 +1,4 @@
-import * as loginActions from "./loginAction";
+import * as signupActions from "./signupAction";
 
 const initialState = {
   user: {
@@ -19,23 +19,24 @@ const initialState = {
   error: null,
 };
 
-const loginReducer = (state = initialState, action) => {
+const signupReducer = (state = initialState, action) => {
   switch (action.type) {
-    case loginActions.LOGIN:
+    case signupActions.SIGNUP:
       return {
         ...state,
         loading: true,
       };
-    case loginActions.LOGIN_SUCCESS:
+    case signupActions.SIGNUP_SUCCESS:
       return {
         ...state,
         loading: false,
+        error: null,
         user: {
           token: action.payload.token,
           info: action.payload.userInfo,
         },
       };
-    case loginActions.LOGIN_FAILURE:
+    case signupActions.SIGNUP_FAILURE:
       return {
         ...state,
         loading: false,
@@ -46,4 +47,4 @@ const loginReducer = (state = initialState, action) => {
   }
 };
 
-export default loginReducer;
+export default signupReducer;

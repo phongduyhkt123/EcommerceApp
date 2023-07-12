@@ -4,6 +4,7 @@ import {
   Center,
   HStack,
   Image,
+  Pressable,
   ScrollView,
   Text,
   VStack,
@@ -12,32 +13,46 @@ import React from "react";
 
 import Colors from "../color";
 import Buttone from "../Components/Buttone";
+import { useNavigation } from "@react-navigation/native";
+import { connect } from "react-redux";
 
-const paymentMethos = [
+const PAYPAL = 1;
+const DISCOVER = 2;
+const GOOGLEPAY = 3;
+
+const paymentMethods = [
   {
     image: "https://img.freepik.com/free-icon/paypal_318-674245.jpg",
     alt: "paypal",
     icon: "Ionicons",
+    value: PAYPAL,
   },
   {
     image: "https://1000logos.net/wp-content/uploads/2021/05/Discover-logo.png",
     alt: "discover",
     icon: "fontAwesome",
+    value: DISCOVER,
   },
   {
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/1200px-Google_Pay_Logo.svg.png",
     alt: "googlepay",
     icon: "fontAwesome",
+    value: GOOGLEPAY,
   },
 ];
 
-const PaymentScreen = () => {
+const PaymentScreen = ({ address }) => {
+  const [paymentMethod, setPaymentMethod] = React.useState(1);
+  console.log("address", address);
+
+  const navigation = useNavigation();
+
   return (
     <Box flex={1} safeAreaTop bg={Colors.main} py={5}>
       {/* header */}
       <Center pb={5}>
-        <Text color="white" fontSize="lg" fontWeight="bold">
+        <Text color={Colors.white} fontSize="lg" fontWeight="bold">
           PAYMENT METHOD
         </Text>
       </Center>
@@ -51,49 +66,60 @@ const PaymentScreen = () => {
       >
         <ScrollView showsVerticalScrollIndicator={false}>
           <VStack space={6} mt={5}>
-            {paymentMethos.map((item, index) => (
-              <HStack
-                key={index}
-                space={5}
-                alignItems="center"
-                px={3}
-                py={1}
-                rounded={30}
-                justifyContent="space-between"
-                bg={Colors.white}
+            {paymentMethods.map((item) => (
+              <Pressable
+                key={item.value}
+                onPress={() => setPaymentMethod(item.value)}
               >
-                <Box>
-                  <Image
-                    source={{
-                      uri: item.image,
-                    }}
-                    alt={item.alt}
-                    resizeMode="contain"
-                    w={50}
-                    h={50}
-                  />
-                </Box>
-                {item.icon === "Ionicons" ? (
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={30}
-                    color={Colors.main}
-                  />
-                ) : (
-                  <FontAwesome
-                    name="circle-thin"
-                    size={30}
-                    color={Colors.main}
-                  />
-                )}
-              </HStack>
+                <HStack
+                  space={5}
+                  alignItems="center"
+                  px={3}
+                  py={1}
+                  rounded={30}
+                  justifyContent="space-between"
+                  bg={Colors.white}
+                >
+                  <Box>
+                    <Image
+                      source={{
+                        uri: item.image,
+                      }}
+                      alt={item.alt}
+                      resizeMode="contain"
+                      w={50}
+                      h={50}
+                    />
+                  </Box>
+                  {item.value === paymentMethod ? (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={30}
+                      color={Colors.main}
+                    />
+                  ) : (
+                    <FontAwesome
+                      name="circle-thin"
+                      size={30}
+                      color={Colors.main}
+                    />
+                  )}
+                </HStack>
+              </Pressable>
             ))}
 
-            <Buttone bg={Colors.main} color={Colors.white}>
+            <Buttone
+              bg={Colors.main}
+              color={Colors.white}
+              onPress={() =>
+                navigation.navigate("Placeorder", {
+                  paymentMethod,
+                })
+              }
+            >
               Continue
             </Buttone>
             <Text italic textAlign="center">
-              {" "}
               Payment method is <Text bold> Paypal </Text> by default
             </Text>
           </VStack>
@@ -103,4 +129,8 @@ const PaymentScreen = () => {
   );
 };
 
-export default PaymentScreen;
+const mapStateToProps = (state) => ({
+  address: state.shippingReducer.address,
+});
+
+export default connect(mapStateToProps)(PaymentScreen);

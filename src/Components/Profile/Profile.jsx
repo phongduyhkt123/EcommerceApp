@@ -3,31 +3,44 @@ import React from "react";
 
 import Colors from "../../color";
 import Buttone from "../Buttone";
-
-const Inputs = [
-  {
-    label: "Full Name",
-    placeholder: "John Doe",
-    type: "text",
-  },
-  {
-    label: "Email",
-    placeholder: "aaa@gmail.com",
-    type: "email",
-  },
-  {
-    label: "New Password",
-    placeholder: "********",
-    type: "password",
-  },
-  {
-    label: "Confirm Password",
-    placeholder: "********",
-    type: "password",
-  },
-];
+import { useSelector } from "react-redux";
 
 const Profile = () => {
+  const userInfo = useSelector((state) => state.authenReducer.user.info);
+
+  const Inputs = [
+    {
+      label: "Full Name",
+      value: userInfo.fullname,
+      type: "text",
+    },
+    {
+      label: "Email",
+      value: userInfo.email,
+      type: "email",
+    },
+    {
+      label: "Username",
+      value: userInfo.username,
+      type: "text",
+    },
+    {
+      label: "Phone",
+      value: userInfo.phone,
+      type: "phone",
+    },
+    {
+      label: "New Password",
+      value: "********",
+      type: "password",
+    },
+    {
+      label: "Confirm Password",
+      value: "********",
+      type: "password",
+    },
+  ];
+
   return (
     <Box h="full" bg={Colors.white} px={5}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -47,7 +60,8 @@ const Profile = () => {
                 bg={Colors.subGreen}
                 py={4}
                 type={input.type}
-                placeholder={input.placeholder}
+                placeholder={input.value}
+                value={input.value}
                 color={Colors.main}
                 fontSize={20}
                 _focus={{

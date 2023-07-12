@@ -8,6 +8,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import store from "./src/Stores/store";
+import GlobalAlert from "./src/Components/GlobalAlert";
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,7 @@ export default function App() {
     <Provider store={store}>
       <NativeBaseProvider>
         <NavigationContainer>
+          <GlobalAlert />
           <StatusBar hidden={true} />
           <Stack.Navigator
             initialRouteName="Login"

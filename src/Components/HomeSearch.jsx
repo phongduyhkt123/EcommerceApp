@@ -3,9 +3,19 @@ import React from "react";
 import Colors from "../color";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { connect } from "react-redux";
+import { searchProducts } from "../Stores/product/productAction";
 
-const HomeSearch = () => {
+const HomeSearch = ({ token, searchProducts }) => {
   const navigation = useNavigation();
+
+  const [keyword, setKeyword] = React.useState("");
+
+  const handleSearch = () => {
+    searchProducts(token, keyword);
+    navigation.navigate("Search");
+  };
+
   return (
     <HStack
       space={2}
@@ -24,16 +34,18 @@ const HomeSearch = () => {
             size={20}
             color={Colors.main}
             style={{ marginHorizontal: 8 }}
-            onPress={() => navigation.navigate("Search")}
+            onPress={handleSearch}
           />
         }
         placeholder="Search for products..."
+        value={keyword}
         w="85%"
         bg={Colors.white}
         type="search"
         h={12}
         borderWidth={0}
         _focus={{ bg: Colors.white }}
+        onChangeText={(text) => setKeyword(text)}
       />
       {/* Shopping cart */}
       <Pressable
@@ -65,4 +77,16 @@ const HomeSearch = () => {
   );
 };
 
-export default HomeSearch;
+const mapStateToProps = (state) => {
+  return {
+    token: state.authenReducer.user.token,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    searchProducts: (keyword) => dispatch(searchProducts(keyword)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeSearch);

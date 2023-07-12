@@ -14,12 +14,12 @@ import React from "react";
 import products from "../data/products";
 import Colors from "../color";
 
-const OrderItem = () => {
+const OrderItem = ({ data = [] }) => {
   return (
     <FlatList
       showsVerticalScrollIndicator={false}
-      data={products.slice(0, 10)}
-      keyExtractor={(item) => item.id}
+      data={data}
+      keyExtractor={(item, index) => index}
       renderItem={({ item }) => (
         <Pressable>
           <Box mb={3}>
@@ -32,8 +32,8 @@ const OrderItem = () => {
             >
               <Center w="25%" bg={Colors.deepGray}>
                 <Image
-                  source={{ uri: item.thumbnail }}
-                  alt={item.title}
+                  source={{ uri: item.productVariation.avatar.url }}
+                  alt={item.productVariation.product.name}
                   w="full"
                   h={24}
                   resizeMethod="scale"
@@ -41,10 +41,10 @@ const OrderItem = () => {
               </Center>
               <VStack w="60%" px={2}>
                 <Text isTruncated color={Colors.black} bold fontSize={12}>
-                  {item.title}
+                  {item.productVariation.product.name}
                 </Text>
                 <Text color={Colors.lightBlack} bold fontSize={12} mt={2}>
-                  ${item.price}
+                  ${item.productVariation.price}
                 </Text>
               </VStack>
               <Center>
@@ -53,7 +53,7 @@ const OrderItem = () => {
                   _pressed={{ bg: Colors.main }}
                   _text={{ color: Colors.white }}
                 >
-                  5
+                  {item.quantity}
                 </Button>
               </Center>
             </HStack>

@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { BASE_URL } from "../api";
 
 const initialState = {
   products: [],
@@ -13,7 +14,7 @@ const productSlide = createSlice({
   reducers: {
     GET_PRODUCTS: (state) => {
       axios
-        .get("http://localhost:8080/api/product")
+        .get(BASE_URL + "product")
         .then((res) => {
           state.products.push(res.data);
         })
