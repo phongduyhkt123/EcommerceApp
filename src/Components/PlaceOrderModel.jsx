@@ -5,36 +5,41 @@ import Colors from "../color";
 import { createOrder } from "../Stores/order/orderAction";
 import { connect } from "react-redux";
 
-const OrdersInfos = [
-  {
-    title: "Products",
-    price: 100,
-    color: "black",
-  },
-  {
-    title: "Shipping",
-    price: 24,
-    color: "black",
-  },
-  {
-    title: "Tax",
-    price: 10,
-    color: "black",
-  },
-  {
-    title: "Total",
-    price: 134,
-    color: "main",
-  },
-];
+import { commas } from "../utils/utils";
 
 const PlaceOrderModel = ({ data, token, createOrder }) => {
   const [showModel, setShowModel] = useState(false);
 
-  const total = data.cartItems.reduce(
-    (acc, item) => acc + item.productVariation.price,
-    0
-  );
+  const productPrices = useMemo(() => {
+    return data.cartItems.reduce((total, item) => {
+      return (
+        total +
+        item.productVariation.price *
+          (1 - item.productVariation.discount / 100) *
+          item.quantity
+      );
+    }, 0);
+  }, [data.cartItems]);
+
+  const shippingPrice = 24000;
+
+  const OrdersInfos = [
+    {
+      title: "Products",
+      price: productPrices,
+      color: "black",
+    },
+    {
+      title: "Shipping",
+      price: shippingPrice,
+      color: "black",
+    },
+    {
+      title: "Total",
+      price: productPrices + shippingPrice,
+      color: "main",
+    },
+  ];
 
   const handlePlaceOrder = () => {
     const order = {
@@ -53,7 +58,7 @@ const PlaceOrderModel = ({ data, token, createOrder }) => {
       receiverName: data.deliveryAddress.name,
       receiverPhone: data.deliveryAddress.phone,
       paymentMethod: data.paymentMethod,
-      shipPrice: 0,
+      shipPrice: shippingPrice,
       toDistrict: 1,
     };
 
@@ -91,7 +96,7 @@ const PlaceOrderModel = ({ data, token, createOrder }) => {
                     color={item.color == "main" ? Colors.main : Colors.black}
                     bold
                   >
-                    $100
+                    ${item.price}
                   </Text>
                 </HStack>
               ))}

@@ -1,6 +1,6 @@
 import { parse } from "react-native-svg";
 
-export const BASE_URL = "http://localhost:8080/api/";
+export const BASE_URL = "http://10.134.6.204:8080/api/";
 
 export const ADDRESS_URL =
   "https://online-gateway.ghn.vn/shiip/public-api/master-data";

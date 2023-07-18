@@ -19,7 +19,6 @@ export const getOrders = ({ token, page, limit }) => {
             Authorization: `Bearer ${token}`,
           },
           params: {
-            status: undefined,
             page,
             limit,
           },

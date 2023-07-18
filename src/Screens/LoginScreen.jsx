@@ -51,7 +51,7 @@ const LoginScreen = ({ navigation, login, user }) => {
         resizeMode="cover"
         size="lg"
         w="full"
-        source={require("../../assets/cover.png")}
+        source={require("../../assets/cover2.png")}
       />
       <Box
         w="full"

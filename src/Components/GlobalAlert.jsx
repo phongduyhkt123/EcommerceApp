@@ -92,7 +92,7 @@ const ToastAlert = ({
                 : null
             }
           >
-            {title}
+            {String(title)}
           </Text>
         </HStack>
         {isClosable ? (
@@ -116,7 +116,7 @@ const ToastAlert = ({
             : null
         }
       >
-        {description}
+        {String(description)}
       </Text>
     </VStack>
   </Alert>

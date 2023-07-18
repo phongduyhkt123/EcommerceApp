@@ -1,23 +1,15 @@
-import {
-  Avatar,
-  Box,
-  CheckIcon,
-  FormControl,
-  HStack,
-  Heading,
-  Select,
-  Text,
-  TextArea,
-  VStack,
-} from "native-base";
-import React from "react";
-import Rating from "./Rating";
+import { Avatar, Box, HStack, Heading, Text } from "native-base";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import { getComments } from "../Stores/comment/commentAction";
 import Colors from "../color";
 import Message from "./Notifications/Message";
-import Buttone from "./Buttone";
+import Rating from "./Rating";
 
-const Review = () => {
-  const [ratings, setRatings] = React.useState("5");
+const Review = ({ productId, token, getComments, comments, loading }) => {
+  useEffect(() => {
+    getComments({ token, productId });
+  }, []);
 
   return (
     <>
@@ -33,40 +25,41 @@ const Review = () => {
         </Heading>
       </Box>
       {/* NO REVIEW */}
-      <Message bg={Colors.deepGray} color={Colors.main} size={15}>
-        No review yet
-      </Message>
-      {/* REVIEW */}
-      <Box px={5} py={2} mt={5} bg={Colors.deepGray} rounded="md">
-        <HStack alignItems="center" justifyContent="space-between">
-          <HStack alignItems="center">
-            <Avatar
-              size="sm"
-              source={{
-                uri: "https://i.dummyjson.com/data/user/1/avatar.jpg",
-              }}
-            />
-            <Text ml={2} color={Colors.black} fontWeight="bold">
-              John Doe
-            </Text>
-          </HStack>
-          <Rating value={4} />
-        </HStack>
-        {/* time */}
-        <Text mt={2} color={Colors.black}>
-          Jan 20, 2021
-        </Text>
-        <Message bg={Colors.white} color={Colors.black} size={15}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
-          voluptatum, quibusdam, quia, quos voluptates voluptatibus quod
-          voluptatem quas doloribus quidem natus. Quisquam voluptatum,
-          quibusdam, quia, quos voluptates voluptatibus quod voluptatem quas
-          doloribus quidem natus.
+      {comments.length === 0 && !loading && (
+        <Message bg={Colors.deepGray} color={Colors.main} size={15}>
+          No review yet
         </Message>
-      </Box>
+      )}
+
+      {/* REVIEW */}
+      {comments.map((comment) => (
+        <Box px={5} py={2} mt={5} bg={Colors.deepGray} rounded="md">
+          <HStack alignItems="center" justifyContent="space-between">
+            <HStack alignItems="center">
+              <Avatar
+                size="sm"
+                source={{
+                  uri: "https://i.dummyjson.com/data/user/1/avatar.jpg",
+                }}
+              />
+              <Text ml={2} color={Colors.black} fontWeight="bold">
+                {comment.fullnameOfUser}
+              </Text>
+            </HStack>
+            <Rating value={comment.rate} />
+          </HStack>
+          {/* time */}
+          <Text mt={2} color={Colors.black}>
+            Jan 20, 2021
+          </Text>
+          <Message bg={Colors.white} color={Colors.black} size={15}>
+            {comment.description}
+          </Message>
+        </Box>
+      ))}
 
       {/* WRITE REVIEW */}
-      <Box mt={5}>
+      {/* <Box mt={5}>
         <Heading color={Colors.black} fontWeight="bold" fontSize={15}>
           WRITE A REVIEW
         </Heading>
@@ -118,9 +111,19 @@ const Review = () => {
             Submit
           </Buttone>
         </VStack>
-      </Box>
+      </Box> */}
     </>
   );
 };
 
-export default Review;
+const mapStateToProps = (state) => ({
+  comments: state.commentReducer.comments,
+  loading: state.commentReducer.loading,
+  token: state.authenReducer.user.token,
+});
+const mapDispatchToProps = (dispatch) => ({
+  getComments: ({ token, productId }) =>
+    dispatch(getComments({ token, productId })),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Review);

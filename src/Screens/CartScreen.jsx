@@ -1,11 +1,21 @@
 import { Box, Button, Center, HStack, ScrollView, Text } from "native-base";
-import React from "react";
+import React, { useMemo } from "react";
 import Buttone from "../Components/Buttone";
 import CartItems from "../Components/CartItems";
 import Colors from "../color";
 import { useNavigation } from "@react-navigation/native";
-const CartScreen = () => {
+import { connect } from "react-redux";
+import { commas } from "../utils/utils";
+
+const CartScreen = ({ cartItems }) => {
   const navigation = useNavigation();
+
+  const totalPrices = useMemo(() => {
+    return cartItems.reduce((total, item) => {
+      return total + item.productVariation.price*(1 - item.productVariation.discount/100) * item.quantity;
+    }, 0);
+  }, [cartItems]);
+
   return (
     <Box flex={1} safeAreaTop bg={Colors.subGreen}>
       {/* Header */}
@@ -43,7 +53,7 @@ const CartScreen = () => {
               }}
               _pressed={{ bg: Colors.main }}
             >
-              $356
+              {commas(totalPrices)}
             </Button>
           </HStack>
         </Center>
@@ -64,4 +74,14 @@ const CartScreen = () => {
   );
 };
 
-export default CartScreen;
+const mapStateToProps = (state) => {
+  return {
+    cartItems: state.cartReducer.cartItems,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CartScreen);

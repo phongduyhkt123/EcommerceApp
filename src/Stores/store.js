@@ -7,6 +7,7 @@ import alertReducer from "./alert/alertReducer";
 import addressReducer from "./address/addressReducer";
 import shippingReducer from "./shipping/shippingReducer";
 import signupReducer from "./signup/signupReducer";
+import commentReducer from "./comment/commentReducer";
 
 const rootReducer = combineReducers({
   productReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   shippingReducer,
   alertReducer,
   signupReducer,
+  commentReducer,
 });
 const store = configureStore({
   reducer: rootReducer,

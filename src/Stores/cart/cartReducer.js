@@ -57,7 +57,7 @@ const cartReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         cartItems: state.cartItems.filter(
-          (item) => item.productVariation.id !== action.payload.data.id
+          (item) => item.productVariation.id !== action.payload.id
         ),
       };
     case cartActions.DELETE_CART_FAILURE:

@@ -163,8 +163,8 @@ const SingleProductScreen = ({ route, addToCart, errors, alert, token }) => {
               ADD TO CART
             </Buttone>
           </Box>
-
-          <Review />
+          {/* review */}
+          <Review productId={product.id} />
         </Box>
       </ScrollView>
     </Box>
